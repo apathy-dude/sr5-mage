@@ -1,9 +1,11 @@
 import 'babel-polyfill'
 import './object'
 import 'vuetify/dist/vuetify.css'
-import Vue, { ComponentOptions } from 'vue'
+import Vue from 'vue'
 import Vuetify from 'vuetify'
 import App from './App.vue'
+import { ComponentOptions } from 'vue/types/options'
+
 import store from './store/index'
 import router from './router/index'
 
@@ -13,7 +15,8 @@ const app = new Vue({
   el: '#app',
   store,
   router,
-  ...(App as ComponentOptions<Vue>)
+  template: '<app></app>',
+  components: {
+    app: App as ComponentOptions<Vue>
+  }
 })
-
-export { app, router, store }

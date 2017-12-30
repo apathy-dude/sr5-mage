@@ -9,64 +9,36 @@
         <!-- TODO Apply filters -->
         <v-text-field append-icon="search" placeholder="Filter" clearable hide-details single-line></v-text-field>
 
-        <v-list-tile>
-          <v-list-tile-title>Preparations</v-list-tile-title>
-          <v-list-tile-action-text><v-icon>add</v-icon></v-list-tile-action-text>
+        <v-divider></v-divider>
+
+        <v-list-tile class="grey lighten-3" to="/alchemy">
+          <v-list-tile-title>Alchemy</v-list-tile-title>
         </v-list-tile>
+
+        <v-divider></v-divider>
+
         <v-list-tile
           class="ml-2"
-          v-for="(item, i) in preparations"
+          v-for="(prep, i) in preparations"
           :key="'p' + i"
+          :to="'/alchemy/' + prep.key"
         >
           <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"></v-list-tile-title>
+            <v-list-tile-title v-text="prep.value.name"></v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-list-tile-action-text>{{ item.duration }}</v-list-tile-action-text>
+            <v-list-tile-action-text>{{ prep.value | prepDuration }}</v-list-tile-action-text>
           </v-list-tile-action>
         </v-list-tile>
 
         <v-divider></v-divider>
 
-        <v-list-tile>
-          <v-list-tile-title>Sustained Spells</v-list-tile-title>
-          <v-list-tile-action-text><v-icon>add</v-icon></v-list-tile-action-text>
-        </v-list-tile>
-        <v-list-tile
-          class="ml-2"
-          v-for="(item, i) in spells"
-          :key="'s' + i"
-        >
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"></v-list-tile-title>
-          </v-list-tile-content>
+        <v-list-tile class="grey lighten-3" to="/conjuring">
+          <v-list-tile-title>Conjuring</v-list-tile-title>
         </v-list-tile>
 
         <v-divider></v-divider>
 
-        <v-list-tile>
-          <v-list-tile-title>Rituals</v-list-tile-title>
-          <v-list-tile-action-text><v-icon>add</v-icon></v-list-tile-action-text>
-        </v-list-tile>
-        <v-list-tile
-          class="ml-2"
-          v-for="(item, i) in rituals"
-          :key="'r' + i"
-        >
-          <v-list-tile-content>
-            <v-list-tile-title v-text="item.title"></v-list-tile-title>
-          </v-list-tile-content>
-          <v-list-tile-action>
-            <v-list-tile-action-text>{{ item.duration }}</v-list-tile-action-text>
-          </v-list-tile-action>
-        </v-list-tile>
-
-        <v-divider></v-divider>
-
-        <v-list-tile>
-          <v-list-tile-title>Spirits</v-list-tile-title>
-          <v-list-tile-action-text><v-icon>add</v-icon></v-list-tile-action-text>
-        </v-list-tile>
         <v-list-tile
           class="ml-2"
           v-for="(item, i) in spirits"
@@ -84,12 +56,61 @@
           </v-list-tile-action>
         </v-list-tile>
 
+        <v-divider></v-divider>
+
+        <v-list-tile class="grey lighten-3" to="/ritual">
+          <v-list-tile-title>Ritual Spellcasting</v-list-tile-title>
+        </v-list-tile>
+
+        <v-divider></v-divider>
+
+        <v-list-tile
+          class="ml-2"
+          v-for="(item, i) in rituals"
+          :key="'r' + i"
+        >
+          <v-list-tile-content>
+            <v-list-tile-title v-text="item.title"></v-list-tile-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-list-tile-action-text>{{ item.duration }}</v-list-tile-action-text>
+          </v-list-tile-action>
+        </v-list-tile>
+
+        <v-divider></v-divider>
+
+        <v-list-tile class="grey lighten-3" to="/spellcasting">
+          <v-list-tile-title>Spellcasting</v-list-tile-title>
+        </v-list-tile>
+
+        <v-divider></v-divider>
+
+        <v-list-tile
+          class="ml-2"
+          v-for="(item, i) in spells"
+          :key="'s' + i"
+        >
+          <v-list-tile-content>
+            <v-list-tile-title v-text="item.title"></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-divider></v-divider>
+
+        <v-list-tile class="grey lighten-3" to="/magician">
+          <v-list-tile-title>Magician</v-list-tile-title>
+        </v-list-tile>
+
+        <v-divider></v-divider>
+
       </v-list>
     </v-navigation-drawer>
     <v-toolbar fixed app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn to="/settings" icon><v-icon>settings</v-icon></v-btn>
+      <v-btn to="/magician" icon><v-icon>home</v-icon></v-btn>
     </v-toolbar>
     <v-content>
       <v-container fluid>
@@ -104,49 +125,55 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
+import { Component } from 'vue-property-decorator'
+import { IPreparation } from './interfaces/preparationModels'
 
-export default {
-  data() {
-    return {
-      drawer: true,
-      fixed: true,
-      title: 'SR5-Mage',
-      visible: {
-        preparations: true,
-        spells: true,
-        rituals: true,
-        spirits: true
-      }
+interface IKeyValue<T> {
+  key: string
+  value: T
+}
+
+@Component({
+  name: 'app',
+  filters: {
+    prepDuration(prep: IPreparation): string {
+      return `${prep.initialPotency} hours`
     }
-  },
-  computed: {
-    spells() {
-      return [
-        { title: 'Spell Text 1', sustained: false },
-        { title: 'Spell Text 2', sustained: false },
-        { title: 'Spell Text 3', sustained: true }
-      ]
-    },
-    preparations() {
-      return [
-        { title: 'Prep Text 1', duration: '1 hour' },
-        { title: 'Prep Text 2', duration: '2 hours' },
-        { title: 'Prep Text 3', duration: '6 hours' }
-      ]
-    },
-    rituals() {
-      return [
-        { title: 'Ritual Text 1', duration: '1 day' },
-        { title: 'Ritual Text 2', duration: '7 days' }
-      ]
-    },
-    spirits() {
-      return [
-        { title: 'Spirit Text 1', bound: false, services: 3 },
-        { title: 'Spirit Text 2', bound: true, services: 1 }
-      ]
-    }
+  }
+})
+export default class extends Vue {
+  public drawer: boolean = true
+  public fixed: boolean = true
+  public title: string = 'SR5-Mage'
+
+  get spells(): any[] {
+    return [
+      { title: 'Spell Text 1', sustained: false },
+      { title: 'Spell Text 2', sustained: false },
+      { title: 'Spell Text 3', sustained: true }
+    ]
+  }
+
+  get preparations(): Array<IKeyValue<IPreparation>> {
+    const preps: { [key: string]: IPreparation } = this.$store.state.alchemy.preparations
+    return Object.keys(preps).map(key => {
+      return { key, value: preps[key] }
+    })
+  }
+
+  get rituals(): any[] {
+    return [
+      { title: 'Ritual Text 1', duration: '1 day' },
+      { title: 'Ritual Text 2', duration: '7 days' }
+    ]
+  }
+
+  get spirits(): any[] {
+    return [
+      { title: 'Spirit Text 1', bound: false, services: 3 },
+      { title: 'Spirit Text 2', bound: true, services: 1 }
+    ]
   }
 }
 </script>
-
