@@ -1,41 +1,22 @@
-export interface IDamageTrack {
-    max: number
-    current: number
-    penaltyDivisor: number
-    penaltyModifier: number
-}
-
-export interface ICharacter {
-    attributes: {
-        [attribute: string]: number
-    }
-    skills: {
-        [skill: string]: number
-    }
-    damageTracks: {
-        [track: string]: IDamageTrack
-    }
-
-    drainResist: number
-    sustainPenalty: number
-}
+import { IRitualFormula } from './formulaModels'
+import { ITime } from './timeModels'
 
 export interface IMagic {
     name: string
     force: number
-    created: Date
+    created: ITime
 }
 
-export interface ISpell extends IMagic {
-    sustainPenalty: boolean
-}
-
-export interface IPreparation extends IMagic {
-    initialPotency: number
-    currentPotency: number
+export enum SpellCategory {
+    COMBAT = 'COMBAT',
+    DETECTION = 'DETECTION',
+    HEALTH = 'HEALTH',
+    ILLUSION = 'ILLUSION',
+    MANIPULATION = 'MANIPULATION'
 }
 
 export interface IRitual extends IMagic {
+    formla: IRitualFormula
     durationLength: 'Hour | Day | Week | Month | Year'
     durationInterval: number
 }
