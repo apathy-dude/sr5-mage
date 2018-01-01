@@ -19,6 +19,8 @@ export interface IPreparation extends IMagic {
     trigger: IPreparationTrigger
     initialPotency: number
     currentPotency: number
+    durationMultiplier: number
+    durationModifier: number
 }
 
 export interface ICombatPreparation extends IPreparation {

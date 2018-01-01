@@ -4,6 +4,10 @@ import { ITime } from './timeModels'
 export interface IMagic {
     name: string
     force: number
+    reagentLimit?: number // TODO: Concider moving to Magic this can affect
+    postEdgeDrainDice: number // Hack to allow for post edge drain
+    drainRecieved: number // Hack to limit amount of drain healed when post edging.  Probably make a button on a message only while last in mesage queue
+    drainTypeRecieved: 'PHYSICAL' | 'STUN'
     created: ITime
 }
 

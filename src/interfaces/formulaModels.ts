@@ -7,6 +7,7 @@ export interface IFormula {
 }
 
 export interface ISpellFormula extends IFormula {
+    category: SpellCategory
     type: 'PHYSICAL' | 'MANA'
     range: 'TOUCH' | 'LOS' | 'LOS (A)'
     duration: 'INSTANTANEOUS' | 'SUSTAINED' | 'PERMANANT'
