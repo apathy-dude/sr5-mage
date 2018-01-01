@@ -5,7 +5,7 @@
       app
       v-model="drawer"
     >
-      <v-list>
+      <v-list dense>
         <!-- TODO Apply filters -->
         <v-text-field append-icon="search" placeholder="Filter" clearable hide-details single-line></v-text-field>
 
@@ -21,7 +21,7 @@
           class="ml-2"
           v-for="(prep, i) in preparations"
           :key="'p' + i"
-          :to="'/alchemy/' + prep.key"
+          :to="`/alchemy/preparation/${prep.key}`"
         >
           <v-list-tile-content>
             <v-list-tile-title v-text="prep.value.name"></v-list-tile-title>
@@ -101,6 +101,20 @@
           <v-list-tile-title>Magician</v-list-tile-title>
         </v-list-tile>
 
+        <v-list-tile class="ml-2">
+          <!-- TODO: Damage/Heal action -->
+          <v-list-tile-content>
+            Physical Track {{ physicalTrack.current }}/{{ physicalTrack.max }}
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-list-tile class="ml-2">
+          <!-- TODO: Damage/Heal action -->
+          <v-list-tile-content>
+            Stun Track {{ stunTrack.current }}/{{ stunTrack.max }}
+          </v-list-tile-content>
+        </v-list-tile>
+
         <v-divider></v-divider>
 
       </v-list>
@@ -127,18 +141,19 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
-import { IPreparation } from './interfaces/preparationModels'
 
-interface IKeyValue<T> {
-  key: string
-  value: T
-}
+import { IKeyValue } from './interfaces/util'
+import { IPreparation } from './interfaces/preparationModels'
+import { IDamageTrack } from './interfaces/magicianModels'
+
+import { PHYSICAL, STUN } from './interfaces/damageTracks'
+import { MAGICIAN_MODULE } from './store/index'
 
 @Component({
   name: 'app',
   filters: {
     prepDuration(prep: IPreparation): string {
-      return `${prep.initialPotency} hours`
+      return `${prep.initialPotency * prep.durationMultiplier + prep.durationModifier} hours`
     }
   }
 })
@@ -146,6 +161,14 @@ export default class extends Vue {
   public drawer: boolean = true
   public fixed: boolean = true
   public title: string = 'SR5-Mage'
+
+  get physicalTrack(): IDamageTrack {
+    return this.$store.state[MAGICIAN_MODULE].damageTracks[PHYSICAL]
+  }
+
+  get stunTrack(): IDamageTrack {
+    return this.$store.state[MAGICIAN_MODULE].damageTracks[STUN]
+  }
 
   get spells(): any[] {
     return [

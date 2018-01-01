@@ -3,8 +3,7 @@ import Vuex, { Store, Module } from 'vuex'
 import MagicianModule from './magician'
 import AlchemyModule, { IAlchemyState } from './alchemy'
 import { ITime } from '../interfaces/timeModels'
-import { ICharacter } from '../interfaces/magicModels'
-import { ComponentOptions } from 'vue/types/options'
+import { ICharacter } from '../interfaces/magicianModels'
 
 Vue.use(Vuex)
 

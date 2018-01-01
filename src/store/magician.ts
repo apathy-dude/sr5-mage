@@ -2,7 +2,7 @@ import { IMageState, IBasicMutation } from './'
 import { ICharacter } from '../interfaces/magicianModels'
 import { Module } from 'vuex'
 
-import { ATTRIBUTE, MAGIC } from '../interfaces/attributes'
+import { ATTRIBUTE, EDGE, MAGIC } from '../interfaces/attributes'
 import { SKILL, ALCHEMY, BINDING, RITUAL_SPELLCASTING, SPELLCASTING, SUMMONING } from '../interfaces/skills'
 import { DAMAGE_TRACK_MAX, DAMAGE_TRACK_CURRENT, DAMAGE_TRACK_PENALTY_DIVISOR, DAMAGE_TRACK_PENALTY_MODIFIER, PHYSICAL, STUN } from '../interfaces/damageTracks'
 
@@ -13,10 +13,11 @@ export const ALCHEMY_DURATION_MODIFIER = 'ALCHEMY_DURATION_MODIFIER'
 
 export const CONJURING_SPIRIT_INDEX = 'CONJURING_SPIRIT_INDEX'
 
-export const SPELLCASTING_SUSTAIN_PENALTY = 'SUSTAIN_PENALTY'
+export const SPELLCASTING_SUSTAIN_PENALTY = 'SPELLCASTING_SUSTAIN_PENALTY'
 
 const baseCharacter: ICharacter = {
   attributes: {
+    [EDGE]: 3,
     [MAGIC]: 6
   },
   skills: {

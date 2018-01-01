@@ -13,6 +13,7 @@ export const CHARISMA = 'charisma'
 */
 
 // Metahuman special attributes
+export const EDGE = 'edge'
 export const MAGIC = 'magic'
 // export const RESSONANCE = 'ressonance'
 // export const ESSENCE = 'essence'

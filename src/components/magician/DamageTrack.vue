@@ -21,7 +21,6 @@
 import Vue from 'vue'
 import { Component, Prop } from 'vue-property-decorator'
 
-import { SKILL } from '../../interfaces/skills'
 import { DAMAGE_TRACK_MAX, DAMAGE_TRACK_CURRENT, DAMAGE_TRACK_PENALTY_DIVISOR, DAMAGE_TRACK_PENALTY_MODIFIER } from '../../interfaces/damageTracks'
 
 import { MAGICIAN_MODULE } from '../../store/index'
