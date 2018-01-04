@@ -7,16 +7,19 @@ import { IPreparation, IPreparationTrigger, ICombatPreparation, PreparationTrigg
 
 import { Guid } from '../services/guidService'
 import { roll } from '../services/diceService'
+import { IHasId } from '../interfaces/util'
 
 import { ICharacter } from '../interfaces/magicianModels'
 import { ALCHEMY } from '../interfaces/skills'
 import { MAGIC } from '../interfaces/attributes'
 
+import { command, time, contact } from '../data/triggers'
+
 export const CREATE_PREP = 'ADD_PREP'
 export const DELETE_PREP = 'DELETE_PREP'
 export const USE_PREP = 'USE_PREP'
 
-export const ADD_FORMULA = 'ADD_FORMULA'
+export const FORMULA = 'FORMULA'
 export const DELETE_FORMULA = 'DELETE_FORMULA'
 
 export const ADD_TRIGGER = 'ADD_TRIGGER'
@@ -33,12 +36,19 @@ export interface ICreatePrep {
 }
 
 export interface IAlchemyState {
-  knownFormula: { [key: string]: ICombatSpellFormula | IDetectionSpellFormula | IHealthSpellFormula | IIllusionSpellFormula | IManipulationSpellFormula }
+  knownFormula: Array<(ICombatSpellFormula | IDetectionSpellFormula | IHealthSpellFormula | IIllusionSpellFormula | IManipulationSpellFormula | ISpellFormula) & IHasId>
   knownTriggers: { [key: string]: IPreparationTrigger }
   preparations: { [key: string]: IPreparation }
 }
 
-const formula: ICombatSpellFormula = {
+const triggers: { [key: string]: IPreparationTrigger } = [ command, time, contact ]
+  .reduce((a: { [key: string]: IPreparationTrigger }, t: IPreparationTrigger) => {
+    a[t.trigger] = t
+    return a
+  }, {})
+
+const formula: ICombatSpellFormula & IHasId = {
+    id: 'asd',
     name: 'Punch',
     drain: 0,
     effect: '',
@@ -55,6 +65,7 @@ const prep: ICombatPreparation = {
   force: 0,
   postEdgeDrainDice: 0,
   drainRecieved: 0,
+  drainTypeRecieved: 'STUN',
   created: {
     year: 2075,
     month: 1,
@@ -79,10 +90,8 @@ const prep: ICombatPreparation = {
 const module: Module<IAlchemyState, IMageState> = {
   namespaced: true,
   state: {
-    knownFormula: {
-      asd: formula
-    },
-    knownTriggers: {},
+    knownFormula: [ formula ],
+    knownTriggers: triggers,
     preparations: {
       asd: prep
     }
@@ -133,6 +142,26 @@ const module: Module<IAlchemyState, IMageState> = {
       // TODO: Use prep
       // TODO: Log all dice rolls of prep
       delete state.preparations[id]
+    },
+
+    [FORMULA](state: IAlchemyState, data: ISpellFormula & IHasId) {
+      const idx: number = state.knownFormula.findIndex(f => f.id === data.id)
+
+      if (idx > -1) {
+        Object.keys(data)
+          .forEach(key => state.knownFormula[idx][key] = data[key])
+
+        return
+      }
+
+      state.knownFormula.push(data)
+    },
+    [DELETE_FORMULA](state: IAlchemyState, id: string) {
+      const idx = state.knownFormula.findIndex(f => f.id === id)
+
+      if (idx > -1) {
+        state.knownFormula.splice(idx, 1)
+      }
     }
   }
 }

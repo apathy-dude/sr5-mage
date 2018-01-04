@@ -2,20 +2,27 @@
   <v-flex xs12 xl2>
     <v-card>
       <v-card-text>
-        <h3 class="text-xs-center">{{ category | fromCaps }}</h3>
+        <h3>{{ category | fromCaps }}</h3>
         <v-speed-dial
+          v-if="!quickCast"
           v-for="(p, i) in formula" :key="`${category}-${i}`"
           hover
-          direction="bottom"
-          transition="slide-y-reverse-transition"
+          direction="left"
+          transition="slide-x-reverse-transition"
           >
-          <v-btn slot="activator" flat block hover>{{ p.value.name }}</v-btn>
-          <v-btn small fab dark class="blue" :to="`/alchemy/formula/${p.key}`"><v-icon>edit</v-icon></v-btn>
-          <v-btn small fab dark class="red"><v-icon>delete</v-icon></v-btn>
+          <v-btn slot="activator" block hover>{{ p.name }}</v-btn>
+          <v-btn small fab dark class="blue" @click.stop="editFunc(p.id, p)"><v-icon>edit</v-icon></v-btn>
+          <v-btn small fab dark class="red" @click.stop="deleteFunc(p.id)"><v-icon>delete</v-icon></v-btn>
           <v-btn small fab>Roll</v-btn>
           <v-btn small fab>Edge</v-btn>
         </v-speed-dial>
-        <v-btn fab small absolute top left color="primary"><v-icon>add</v-icon></v-btn>
+        <v-btn
+          v-if="quickCast"
+          v-for="(p, i) in formula" :key="`${category}-${i}`"
+          slot="activator"
+          block hover
+        >{{ p.name }}</v-btn>
+        <v-btn fab small absolute top right @click.stop="createFunc(category)" color="primary"><v-icon>add</v-icon></v-btn>
       </v-card-text>
     </v-card>
   </v-flex>
@@ -28,23 +35,24 @@ import { fromCaps } from '../../filters/labelFilter'
 
 import { SpellCategory } from '../../interfaces/magicModels'
 import { ISpellFormula } from '../../interfaces/formulaModels'
-import { IKeyValue } from '../../interfaces/util'
 
 @Component({
-  name: 'skill',
+  name: 'alchemy-formula-list',
   filters: {
     fromCaps
   }
 })
-export default class Skill extends Vue {
+export default class AlchemyFormulaList extends Vue {
   @Prop({ required: true }) public category: SpellCategory
+  @Prop({ required: true }) public quickCast: boolean
 
-  get formula(): Array<IKeyValue<ISpellFormula>> {
-    return Object.keys(this.$store.state.alchemy.knownFormula)
-      .map(k => {
-        return { key: k, value: this.$store.state.alchemy.knownFormula[k] }
-      })
-      .filter(k => k.value.category === this.category)
+  @Prop({ required: true }) public createFunc: (category: SpellCategory) => void
+  @Prop({ required: true }) public editFunc: (id: string, formula: ISpellFormula) => void
+  @Prop({ required: true }) public deleteFunc: (id: string) => void
+
+  get formula(): Array<ISpellFormula & { id: string }> {
+    const formula: Array<ISpellFormula & { id: string }> = this.$store.state.alchemy.knownFormula
+    return formula.filter(f => f.category === this.category)
   }
 }
 </script>

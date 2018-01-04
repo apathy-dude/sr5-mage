@@ -11,6 +11,7 @@ export interface ISpellFormula extends IFormula {
     type: 'PHYSICAL' | 'MANA'
     range: 'TOUCH' | 'LOS' | 'LOS (A)'
     duration: 'INSTANTANEOUS' | 'SUSTAINED' | 'PERMANANT'
+    keywords: string[]
 }
 
 export interface ICombatSpellFormula extends ISpellFormula {

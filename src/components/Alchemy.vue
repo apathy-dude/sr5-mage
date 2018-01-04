@@ -36,13 +36,24 @@
           <v-card-text>
             <h3>Preparation Settings</h3>
             <v-text-field label="Force" type="number" v-model="force"></v-text-field>
-            <v-select label="Trigger"></v-select>
+            <v-select v-model="trigger" return-object item-text="trigger" item-value="trigger" :items="triggers" label="Trigger"></v-select>
             <v-text-field label="Reagents" type="number" v-model="reagent"></v-text-field>
+            <v-switch label="Single Click Prep" hide-details v-model="quickCast"></v-switch>
           </v-card-text>
         </v-card>
       </v-flex>
 
-      <alchemy-formula-list v-for="category in spellCategories" :key="`${category}-formula`" :category="category"></alchemy-formula-list>
+      <alchemy-formula-list
+        v-for="category in spellCategories"
+        :key="`${category}-formula`"
+        :category="category"
+        :quickCast="quickCast"
+        :createFunc="newFormula"
+        :editFunc="editFormula"
+        :deleteFunc="deleteFormula"
+      ></alchemy-formula-list>
+
+      <alchemy-formula v-if="showFormulaModal" :id="modalFormulaId" :show="showFormulaModal" :formula="modalFormula" :close="closeModal"></alchemy-formula>
     </v-layout>
   </v-container>
 </template>
@@ -56,24 +67,34 @@ import { SpellCategory } from '../interfaces/magicModels'
 import { ATTRIBUTE, EDGE, MAGIC } from '../interfaces/attributes'
 import { ALCHEMY } from '../interfaces/skills'
 import { IPreparationTrigger } from '../interfaces/preparationModels'
+import { ISpellFormula } from '../interfaces/formulaModels'
 
 import AlchemyFormulaListComponent from './alchemy/AlchemyFormulaList.vue'
+import AlchemyFormulaComponent from './alchemy/AlchemyFormula.vue'
 import SkillComponent from './magician/Skill.vue'
 
 import { IBasicMutation } from '../store/index'
 import { ALCHEMY_MODULE, MAGICIAN_MODULE } from '../store/index'
+import { DELETE_FORMULA } from '../store/alchemy'
 import { ALCHEMY_DURATION_MULTIPLIER, ALCHEMY_DURATION_MODIFIER, DRAIN_RESIST } from '../store/magician'
 
 @Component({
   name: 'alchemy',
   components: {
     'alchemy-formula-list': AlchemyFormulaListComponent,
+    'alchemy-formula': AlchemyFormulaComponent,
     'skill': SkillComponent
   }
 })
 export default class Alchemy extends Vue {
   public force: number = 6
   public reagent: number = 0
+  public trigger: IPreparationTrigger | null = null
+  public quickCast: boolean = true
+
+  public showFormulaModal: boolean = false
+  public modalFormula: ISpellFormula | null
+  public modalFormulaId: string | null
 
   public skills: string[] = [ ALCHEMY ]
   public spellCategories: SpellCategory[] = [
@@ -83,6 +104,47 @@ export default class Alchemy extends Vue {
     SpellCategory.ILLUSION,
     SpellCategory.MANIPULATION
   ]
+
+  public newFormula(spellCategory: SpellCategory): void {
+    this.modalFormulaId = ''
+    const baseFormula: ISpellFormula = {
+      name: '',
+      drain: 0,
+      effect: '',
+      type: 'PHYSICAL',
+      range: 'TOUCH',
+      duration: 'INSTANTANEOUS',
+      category: spellCategory,
+      keywords: []
+    }
+
+    switch (spellCategory) {
+      case SpellCategory.COMBAT:
+        this.modalFormula = Object.assign(baseFormula, { damage: 'STUN' }) as ISpellFormula
+        break
+      default:
+        this.modalFormula = baseFormula
+    }
+
+    this.showFormulaModal = true
+  }
+
+  public editFormula(id: string, formula: ISpellFormula): void {
+    this.modalFormulaId = id
+    this.modalFormula = formula
+    this.showFormulaModal = true
+  }
+
+  public deleteFormula(id: string): void {
+    this.$forceUpdate()
+    this.$store.commit(`${ALCHEMY_MODULE}/${DELETE_FORMULA}`, id)
+  }
+
+  public closeModal(): void {
+    this.showFormulaModal = false
+    this.modalFormula = null
+    this.modalFormulaId = null
+  }
 
   get magic(): number { return this.$store.state[MAGICIAN_MODULE].attributes[MAGIC] }
   set magic(value: number) { this.$store.commit(`${MAGICIAN_MODULE}/${ATTRIBUTE}`, { field: MAGIC, value } as IBasicMutation<number>) }
