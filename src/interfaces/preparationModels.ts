@@ -8,6 +8,7 @@ export enum PreparationTrigger {
 }
 
 export interface IPreparationTrigger {
+    id: string
     trigger: PreparationTrigger,
     drain: number
     effect: string

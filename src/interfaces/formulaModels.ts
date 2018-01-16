@@ -1,6 +1,7 @@
 import { SpellCategory } from "./magicModels"
 
 export interface IFormula {
+    id: string
     name: string
     drain: number
     effect: string

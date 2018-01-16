@@ -21,13 +21,13 @@
           class="ml-2"
           v-for="(prep, i) in preparations"
           :key="'p' + i"
-          :to="`/alchemy/preparation/${prep.key}`"
+          :to="`/alchemy/preparation/${prep.id}`"
         >
           <v-list-tile-content>
-            <v-list-tile-title v-text="prep.value.name"></v-list-tile-title>
+            <v-list-tile-title v-text="prep.name"></v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-list-tile-action-text>{{ prep.value | prepDuration }}</v-list-tile-action-text>
+            <v-list-tile-action-text>{{ prep | prepDuration }}</v-list-tile-action-text>
           </v-list-tile-action>
         </v-list-tile>
 
@@ -128,6 +128,7 @@
     </v-toolbar>
     <v-content>
       <v-container fluid>
+        <message></message>
         <v-slide-y-transition mode="out-in">
           <v-layout column align-center>
             <router-view></router-view>
@@ -142,9 +143,10 @@
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 
-import { IKeyValue } from './interfaces/util'
 import { IPreparation } from './interfaces/preparationModels'
 import { IDamageTrack } from './interfaces/magicianModels'
+
+import MessageComponent from './components/Message.vue'
 
 import { PHYSICAL, STUN } from './interfaces/damageTracks'
 import { MAGICIAN_MODULE } from './store/index'
@@ -155,6 +157,9 @@ import { MAGICIAN_MODULE } from './store/index'
     prepDuration(prep: IPreparation): string {
       return `${prep.initialPotency * prep.durationMultiplier + prep.durationModifier} hours`
     }
+  },
+  components: {
+    message: MessageComponent
   }
 })
 export default class extends Vue {
@@ -178,11 +183,8 @@ export default class extends Vue {
     ]
   }
 
-  get preparations(): Array<IKeyValue<IPreparation>> {
-    const preps: { [key: string]: IPreparation } = this.$store.state.alchemy.preparations
-    return Object.keys(preps).map(key => {
-      return { key, value: preps[key] }
-    })
+  get preparations(): IPreparation[] {
+    return this.$store.state.alchemy.preparations
   }
 
   get rituals(): any[] {

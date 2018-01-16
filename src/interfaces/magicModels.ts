@@ -1,14 +1,36 @@
-import { IRitualFormula } from './formulaModels'
+import { IRitualFormula, ISpellFormula } from './formulaModels'
 import { ITime } from './timeModels'
+import { DamageTracks, PHYSICAL, STUN } from './damageTracks'
 
 export interface IMagic {
+    id: string
     name: string
     force: number
-    reagentLimit?: number // TODO: Concider moving to Magic this can affect
-    postEdgeDrainDice: number // Hack to allow for post edge drain
-    drainRecieved: number // Hack to limit amount of drain healed when post edging.  Probably make a button on a message only while last in mesage queue
-    drainTypeRecieved: 'PHYSICAL' | 'STUN'
     created: ITime
+}
+
+export interface IMagicCreation {
+    name: string
+    force: number
+    limit: number
+    roll: {
+        roll: number[]
+        preEdge: number[]
+        postEdge: number[]
+        oppositionDiePool: number
+        opposition: number[]
+    }
+    drain: {
+        details: Array<{ label: string, value: number }>
+        oppositionDrainMultiplier: number
+        drainResistDice: number
+        drainType: DamageTracks,
+        roll: number[]
+        preEdge: number[]
+        postEdge: number[]
+    }
+    details: any
+    createdAction: string
 }
 
 export enum SpellCategory {

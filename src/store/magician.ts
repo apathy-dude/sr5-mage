@@ -4,7 +4,7 @@ import { Module } from 'vuex'
 
 import { ATTRIBUTE, EDGE, MAGIC } from '../interfaces/attributes'
 import { SKILL, ALCHEMY, BINDING, RITUAL_SPELLCASTING, SPELLCASTING, SUMMONING } from '../interfaces/skills'
-import { DAMAGE_TRACK_MAX, DAMAGE_TRACK_CURRENT, DAMAGE_TRACK_PENALTY_DIVISOR, DAMAGE_TRACK_PENALTY_MODIFIER, PHYSICAL, STUN } from '../interfaces/damageTracks'
+import { DAMAGE_TRACK_MAX, DAMAGE_TRACK_CURRENT, DAMAGE_TRACK_DAMAGE, DAMAGE_TRACK_PENALTY_DIVISOR, DAMAGE_TRACK_PENALTY_MODIFIER, PHYSICAL, STUN } from '../interfaces/damageTracks'
 
 export const DRAIN_RESIST = 'DRAIN_RESIST'
 
@@ -65,6 +65,7 @@ const module: Module<ICharacter, IMageState> = {
     // Damage Track
     [DAMAGE_TRACK_MAX](state: ICharacter, value: IBasicMutation<number>) { state.damageTracks[value.field].max = value.value },
     [DAMAGE_TRACK_CURRENT](state: ICharacter, value: IBasicMutation<number>) { state.damageTracks[value.field].current = value.value },
+    [DAMAGE_TRACK_DAMAGE](state: ICharacter, value: IBasicMutation<number>) { state.damageTracks[value.field].current -= value.value },
     [DAMAGE_TRACK_PENALTY_DIVISOR](state: ICharacter, value: IBasicMutation<number>) { state.damageTracks[value.field].penaltyDivisor = value.value },
     [DAMAGE_TRACK_PENALTY_MODIFIER](state: ICharacter, value: IBasicMutation<number>) { state.damageTracks[value.field].penaltyModifier = value.value },
 
